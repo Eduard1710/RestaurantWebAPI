@@ -29,7 +29,6 @@ namespace RestaurantWebAPI.Controllers
             }
             return Ok(userEntity);
         }
-
         [HttpGet]
         [Route("", Name = "GetAllUsers")]
         public IActionResult GetAllUsers()
@@ -41,7 +40,6 @@ namespace RestaurantWebAPI.Controllers
             }
             return Ok(userEntities);
         }
-
         [Route("Register", Name = "Register new account")]
         [HttpPost]
         public IActionResult Register([FromBody] UserDTO user)

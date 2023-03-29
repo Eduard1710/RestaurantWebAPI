@@ -5,7 +5,7 @@ using RestaurantWebAPI.ExternalModels;
 using RestaurantWebAPI.Services.Managers;
 using RestaurantWebAPI.Services.UnitsOfWork;
 
-namespace PraticaProiect.Controllers
+namespace RestaurantWebAPI.Controllers
 {
     [Route("menu")]
     [ApiController]
@@ -39,7 +39,6 @@ namespace PraticaProiect.Controllers
             }
             return Ok(menuEntities);
         }
-
         [HttpGet]
         [Route("details/{id}", Name = "GetMenuDetails")]
         public IActionResult GetMenuDetails(Guid id)
@@ -51,7 +50,6 @@ namespace PraticaProiect.Controllers
             }
             return Ok(menuEntity);
         }
-
         [HttpPost]
         [Route("add", Name = "AddMenu")]
         public IActionResult AddMenu([FromBody] MenuDTO menu)
@@ -59,7 +57,6 @@ namespace PraticaProiect.Controllers
             var mEntity = _menuService.AddMenu(menu);
             return CreatedAtRoute("GetMenu", new { id = mEntity.ID }, mEntity);
         }
-
         [HttpGet]
         [Route("category/{categoryId}", Name = "GetCategoryDetails")]
         public IActionResult GetCategoryDetails(Guid categoryId)

@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantWebAPI.Entities;
 using RestaurantWebAPI.ExternalModels;
 using RestaurantWebAPI.Services.Managers;
 using RestaurantWebAPI.Services.UnitsOfWork;
 
-namespace PraticaProiect.Controllers
+namespace RestaurantWebAPI.Controllers
 {
     [Route("order")]
     [ApiController]
@@ -34,7 +33,6 @@ namespace PraticaProiect.Controllers
             }
             return Ok(orderEntity);
         }
-
         [HttpGet]
         [Route("", Name = "GetAllOrders")]
         public IActionResult GetAllOrders()
@@ -46,7 +44,6 @@ namespace PraticaProiect.Controllers
             }
             return Ok(orderEntities);
         }
-
         [HttpGet]
         [Route("details/{id}", Name = "GetOrderDetails")]
         public IActionResult GetOrderDetails(Guid id)
