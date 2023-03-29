@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RestaurantWebAPI.Services.Repositories;
 using RestaurantWebAPI.Services.UnitsOfWork;
+using RestaurantWebAPI.Services.Managers;
 
 namespace RestaurantWebAPI
 {
@@ -21,6 +22,10 @@ namespace RestaurantWebAPI
         {
             var connectionString = builder.Configuration["ConnectionStrings:RestaurantDBConnectionString"];
             builder.Services.AddDbContext<RestaurantContext>(o => o.UseSqlServer(connectionString));
+
+            builder.Services.AddScoped<OrderService>();
+            builder.Services.AddScoped<MenuService>();
+            builder.Services.AddScoped<UserService>();
 
             builder.Services.AddScoped<IMenuRepository, MenuRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();

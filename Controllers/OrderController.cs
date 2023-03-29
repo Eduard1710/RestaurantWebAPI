@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RestaurantWebAPI.Entities;
 using RestaurantWebAPI.ExternalModels;
+using RestaurantWebAPI.Services.Managers;
 using RestaurantWebAPI.Services.UnitsOfWork;
 
 namespace PraticaProiect.Controllers
@@ -11,11 +12,13 @@ namespace PraticaProiect.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderUnitOfWork _orderUnit;
+        private readonly OrderService _orderService;
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderUnitOfWork orderunit,
+        public OrderController(IOrderUnitOfWork orderunit, OrderService orderService,
             IMapper mapper)
         {
+            _orderService = orderService;
             _orderUnit = orderunit ?? throw new ArgumentNullException(nameof(orderunit));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
@@ -24,70 +27,61 @@ namespace PraticaProiect.Controllers
         [Route("{id}", Name = "GetOrder")]
         public IActionResult GetOrder(Guid id)
         {
-            var orderEntity = _orderUnit.Orders.Get(id);
+            var orderEntity = _orderService.GetOrder(id);
             if (orderEntity == null)
             {
                 return NotFound();
             }
-            return Ok(_mapper.Map<OrderDTO>(orderEntity));
+            return Ok(orderEntity);
         }
 
         [HttpGet]
         [Route("", Name = "GetAllOrders")]
         public IActionResult GetAllOrders()
         {
-            var orderEntities = _orderUnit.Orders.Find(o => o.Deleted == false || o.Deleted == null);
+            var orderEntities = _orderService.GetAllOrders();
             if (orderEntities == null)
             {
                 return NotFound();
             }
-            return Ok(_mapper.Map<List<OrderDTO>>(orderEntities));
+            return Ok(orderEntities);
         }
 
         [HttpGet]
         [Route("details/{id}", Name = "GetOrderDetails")]
         public IActionResult GetOrderDetails(Guid id)
         {
-            var orderEntity = _orderUnit.Orders.GetOrderDetails(id);
+            var orderEntity = _orderService.GetOrderDetails(id);
             if (orderEntity == null)
             {
                 return NotFound();
             }
-            return Ok(_mapper.Map<OrderDTO>(orderEntity));
+            return Ok(orderEntity);
         }
         [HttpPost]
         [Route("add", Name = "AddOrder")]
         public IActionResult AddOrder([FromBody] OrderDTO order)
         {
-            var orderEntity = _mapper.Map<Order>(order);
-            _orderUnit.Orders.Add(orderEntity);
-            _orderUnit.Complete();
-            _orderUnit.Orders.Get(order.ID);
-            return CreatedAtRoute("GetOrder", new { id = order.ID }, _mapper.Map<OrderDTO>(orderEntity));
+            var orderEntity = _orderService.AddOrder(order);
+            return CreatedAtRoute("GetOrder", new { id = orderEntity.ID }, _mapper.Map<OrderDTO>(orderEntity));
         }
         [HttpDelete]
-        [Route("delete/{id}", Name ="DeleteOrder")]
+        [Route("delete/{id}", Name = "DeleteOrder")]
         public IActionResult DeleteOrder(Guid id)
         {
-            var orderEntity = _orderUnit.Orders.Get(id);
-            if(orderEntity==null)
+            var deleteOrder = _orderService.DeleteOrder(id);
+            if (deleteOrder == false)
             {
                 return NotFound();
             }
-            orderEntity.Deleted = true;
-            _orderUnit.Orders.Remove(orderEntity);
-            _orderUnit.Complete();
             return NoContent();
         }
         [HttpPut]
-        [Route("{id}", Name ="UpdateOrder")]
+        [Route("{id}", Name = "UpdateOrder")]
         public IActionResult UpdateOrder([FromBody] OrderDTO order)
         {
-            var orderEntity = _mapper.Map<Order>(order);
-            _orderUnit.Orders.Update(orderEntity);
-            _orderUnit.Complete();
-            _orderUnit.Orders.Get(order.ID);
-            return CreatedAtRoute("GetOrder", new { id = order.ID }, _mapper.Map<OrderDTO>(orderEntity));
+            var orderEntity = _orderService.UpdateOrder(order);
+            return CreatedAtRoute("GetOrder", new { id = orderEntity.ID },orderEntity);
         }
     }
 }

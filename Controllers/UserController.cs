@@ -3,6 +3,7 @@ using RestaurantWebAPI.Entities;
 using RestaurantWebAPI.ExternalModels;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantWebAPI.Services.UnitsOfWork;
+using RestaurantWebAPI.Services.Managers;
 
 namespace RestaurantWebAPI.Controllers
 {
@@ -10,54 +11,46 @@ namespace RestaurantWebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserUnitOfWork _userUnit;
-        private readonly IMapper _mapper;
+        private readonly UserService _userService;
 
-        public UserController(IUserUnitOfWork userunit,
-            IMapper mapper)
+        public UserController(UserService userService)
         {
-            _userUnit = userunit ?? throw new ArgumentNullException(nameof(userunit));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
         [HttpGet]
         [Route("{id}", Name = "GetUser")]
         public IActionResult GetUser(Guid id)
         {
-            var userEntity = _userUnit.Users.Get(id);
+            var userEntity = _userService.GetUser(id);
             if (userEntity == null)
             {
                 return NotFound();
             }
-            return Ok(_mapper.Map<UserDTO>(userEntity));
+            return Ok(userEntity);
         }
 
         [HttpGet]
         [Route("", Name = "GetAllUsers")]
         public IActionResult GetAllUsers()
         {
-            var userEntities = _userUnit.Users.Find(u => u.Deleted == false || u.Deleted == null);
+            var userEntities = _userService.GetAllUsers();
             if (userEntities == null)
             {
                 return NotFound();
             }
-            return Ok(_mapper.Map<List<UserDTO>>(userEntities));
+            return Ok(userEntities);
         }
 
         [Route("Register", Name = "Register new account")]
         [HttpPost]
         public IActionResult Register([FromBody] UserDTO user)
         {
-            var userEntity = _mapper.Map<User>(user);
-            _userUnit.Users.Add(userEntity);
-
-            _userUnit.Complete();
-
-            _userUnit.Users.Get(userEntity.ID);
+            var userEntity = _userService.AddUser(user);
 
             return CreatedAtRoute("GetUser",
                 new { id = userEntity.ID },
-                _mapper.Map<UserDTO>(userEntity));
+                userEntity);
         }
 
     }
