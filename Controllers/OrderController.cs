@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantWebAPI.ExternalModels;
 using RestaurantWebAPI.Services.Managers;
 using RestaurantWebAPI.Services.UnitsOfWork;
@@ -10,16 +9,11 @@ namespace RestaurantWebAPI.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderUnitOfWork _orderUnit;
         private readonly OrderService _orderService;
-        private readonly IMapper _mapper;
 
-        public OrderController(IOrderUnitOfWork orderunit, OrderService orderService,
-            IMapper mapper)
+        public OrderController(OrderService orderService)
         {
             _orderService = orderService;
-            _orderUnit = orderunit ?? throw new ArgumentNullException(nameof(orderunit));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -60,7 +54,7 @@ namespace RestaurantWebAPI.Controllers
         public IActionResult AddOrder([FromBody] OrderDTO order)
         {
             var orderEntity = _orderService.AddOrder(order);
-            return CreatedAtRoute("GetOrder", new { id = orderEntity.ID }, _mapper.Map<OrderDTO>(orderEntity));
+            return CreatedAtRoute("GetOrder", new { id = orderEntity.ID }, orderEntity);
         }
         [HttpDelete]
         [Route("delete/{id}", Name = "DeleteOrder")]
@@ -78,7 +72,7 @@ namespace RestaurantWebAPI.Controllers
         public IActionResult UpdateOrder([FromBody] OrderDTO order)
         {
             var orderEntity = _orderService.UpdateOrder(order);
-            return CreatedAtRoute("GetOrder", new { id = orderEntity.ID },orderEntity);
+            return CreatedAtRoute("GetOrder", new { id = orderEntity.ID }, orderEntity);
         }
     }
 }

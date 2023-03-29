@@ -9,6 +9,5 @@ namespace RestaurantWebAPI.ExternalModels
         public CategoryDTO? Category { get; set; }
         public string MenuName { get; set; }
         public float Price { get; set; }
-        //public List<OrderMenuDTO> OrderMenu { get; set; }
     }
 }

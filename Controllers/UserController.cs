@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using RestaurantWebAPI.Entities;
-using RestaurantWebAPI.ExternalModels;
+﻿using RestaurantWebAPI.ExternalModels;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantWebAPI.Services.UnitsOfWork;
 using RestaurantWebAPI.Services.Managers;
 
 namespace RestaurantWebAPI.Controllers
